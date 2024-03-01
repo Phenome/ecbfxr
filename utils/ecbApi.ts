@@ -47,7 +47,10 @@ export async function getExchangeRate(
   if (text === "No results found.") {
     return [];
   }
-
+  if (!response.headers.get("content-type")?.includes("application/json")) {
+    console.error("Unexpected response from ECB API", text);
+    return [];
+  }
   const data = JSON.parse(text) as ApiResponse;
 
   const series = Object.values(data?.dataSets?.[0]?.series)?.[0]?.observations;
