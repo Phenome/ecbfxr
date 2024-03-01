@@ -33,7 +33,10 @@ export async function getExchangeRate(
   end?: string,
 ) {
   schema.parse({ currency, start, end });
-  start = start ?? new Date().toISOString().slice(0, 8) + "01";
+  if (!start) {
+    const startDate = new Date().setHours(1, 0, 0, 0);
+    start = new Date(startDate).toISOString().slice(0, 8) + "01";
+  }
   end = end ?? new Date().toISOString().slice(0, 10);
   const response = await fetch(
     `https://data-api.ecb.europa.eu/service/data/EXR/D.${currency}.EUR.SP00.A?startPeriod=${start}&endPeriod=${end}&format=jsondata`,
