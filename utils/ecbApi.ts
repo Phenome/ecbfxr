@@ -34,8 +34,12 @@ export async function getExchangeRate(
 ) {
   schema.parse({ currency, start, end });
   if (!start) {
-    const startDate = new Date().setHours(1, 0, 0, 0);
-    start = new Date(startDate).toISOString().slice(0, 8) + "01";
+    const startDate = new Date();
+    startDate.setHours(1, 0, 0, 0);
+    if (new Date().getDate() === 1) {
+      startDate.setMonth(startDate.getMonth() - 1);
+    }
+    start = startDate.toISOString().slice(0, 8) + "01";
   }
   end = end ?? new Date().toISOString().slice(0, 10);
   const response = await fetch(
@@ -47,7 +51,7 @@ export async function getExchangeRate(
   if (text === "No results found.") {
     return [];
   }
-  if (!response.headers.get("content-type")?.includes("application/json")) {
+  if (!response.headers.get("content-type")?.includes("json")) {
     console.error("Unexpected response from ECB API", text);
     return [];
   }
